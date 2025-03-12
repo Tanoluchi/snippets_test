@@ -137,11 +137,36 @@ class SnippetsByLanguage(View):
         return render(request, "index.html", {"snippets": snippets})
 
 
-# class Login(View):
-#    TODO: Implement login view logic with AuthenticationForm and login handling.
+class Login(AuthenticationForm, View):
+    """
+    View to handle user authentication.
+    
+    GET: Displays the login form.
+    POST: Authenticates the user using the provided credentials. 
+        If successful, logs in the user and redirects to the index page; 
+        otherwise, re-renders the login form with errors.
+    """
+    def get(self, request, *args, **kwargs):
+        form = AuthenticationForm()
+        return render(request, 'login.html', {'form': form})
 
-# class Logout(View):
-#    TODO: Implement logout view logic.
+    def post(self, request, *args, **kwargs):
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect("index")
+        return render(request, 'login.html', {'form': form})
+
+class Logout(View):
+    """
+    View to handle user logout.
+
+    GET: Log out the current authenticated user and redirects to the index page.
+    """
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect('index')
 
 class Index(View):
     """
