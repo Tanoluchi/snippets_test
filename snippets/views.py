@@ -102,7 +102,14 @@ class SnippetDetails(View):
         if not snippet.public and (not request.user.is_authenticated or username != snippet.user.username):
             raise PermissionDenied("No tienes permiso para ver este snippet.")
 
-        return render(request, "snippets/snippet.html", {"snippet": snippet.highlight})
+        return render(
+            request, 
+            "snippets/snippet.html", 
+            {
+                "snippet": snippet, 
+                "highlighted_snippet": snippet.highlight
+            }
+        )
 
 class UserSnippets(View):
     """
@@ -121,7 +128,7 @@ class UserSnippets(View):
         return render(
             request,
             "snippets/user_snippets.html",
-            {"snippetUsername": username, "snippets": snippets},
+            {"snippetUsername": owner, "snippets": snippets},
         )
 
 class SnippetsByLanguage(View):

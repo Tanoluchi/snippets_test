@@ -15,7 +15,7 @@
                     <p class="card-text">{{ snippet.description }}</p>
                     <div>
                         <!-- Código del Snippet -->
-                        <samp>{{ snippet.snippet|safe }}</samp>
+                        <samp>{{ highlighted_snippet|safe }}</samp>
                         <!-- Código del Snippet -->
                     </div>
                     {% if request.user.username == snippet.user.username %}
