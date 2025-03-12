@@ -149,6 +149,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_TASK_ALWAYS_EAGER = config("CELERY_EAGER", default=True)
 CELERY_TASK_EAGER_PROPAGATES = config("CELERY_EAGER", default=True)
 
-ALLOWED_HOSTS = ['localhost','web-production-51c1f.up.railway.app']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','web-production-51c1f.up.railway.app']
 
 CSRF_TRUSTED_ORIGINS = ['http://*','https://web-production-51c1f.up.railway.app']

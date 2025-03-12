@@ -3,8 +3,8 @@ from django.core.mail import send_mail
 
 from django_snippets.settings import EMAIL_HOST_USER as sender
 
-@shared_task(bind=True)
-def sendEmailInSnippetCreation(self, snippet_name, snippet_description, user_mail):
+@shared_task(queue="send_email", ignore_result=True)
+def sendEmailInSnippetCreation(snippet_name, snippet_description, user_mail):
     """
         Celery task to send an email notification when a snippet is created.
 
