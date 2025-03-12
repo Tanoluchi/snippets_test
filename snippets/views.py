@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, logout
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -53,23 +52,24 @@ class SnippetEdit(LoginRequiredMixin, View):
     GET: Renders a form pre-populated with the snippet's current data.
     POST: Processes the form data and updates the snippet if the data is valid.
     """
-    def get(self, request, *args, **kwargs):
-        snippet = get_object_or_404(Snippet, id=kwargs["id"])
-        if request.user != snippet.user:
-            raise PermissionDenied("No tienes permiso para editar este snippet.")
+    def dispatch(self, request, *args, **kwargs):
+        snippet = get_object_or_404(Snippet, id=self.kwargs["id"])
 
-        form = SnippetForm(instance=snippet)
+        if snippet.user.username != request.user.username:
+            return redirect("index")
+
+        self.snippet = snippet
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = SnippetForm(instance=self.snippet)
         return render(request, "snippets/snippet_add.html", {"form": form, "action": "Edit"})
 
     def post(self, request, *args, **kwargs):
-        snippet = get_object_or_404(Snippet, id=kwargs["id"])
-        if request.user != snippet.user:
-            raise PermissionDenied("No tienes permiso para editar este snippet.")
-
-        form = SnippetForm(request.POST, instance=snippet)
+        form = SnippetForm(request.POST, instance=self.snippet)
         if form.is_valid():
             form.save()
-            return redirect("snippet_detail", id=snippet.id)  # Redirige a la vista del snippet
+            return redirect("snippet", id=self.snippet.id)
         return render(request, "snippets/snippet_add.html", {"form": form, "action": "Edit"})
 
 class SnippetDelete(LoginRequiredMixin, View):
@@ -84,7 +84,7 @@ class SnippetDelete(LoginRequiredMixin, View):
         snippet = get_object_or_404(Snippet, id=kwargs["id"])
         username = request.user.username
         if username != snippet.user.username:
-            raise PermissionDenied("No tienes permiso para eliminar este snippet.")
+            return redirect("index")
 
         snippet.delete()
         return redirect("user_snippets", username=request.user.username)
@@ -100,7 +100,7 @@ class SnippetDetails(View):
         snippet = get_object_or_404(Snippet, id=snippet_id)
         username = request.user.username
         if not snippet.public and (not request.user.is_authenticated or username != snippet.user.username):
-            raise PermissionDenied("No tienes permiso para ver este snippet.")
+            return redirect("index")
 
         return render(
             request, 
