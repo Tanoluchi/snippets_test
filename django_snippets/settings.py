@@ -129,6 +129,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 # Activate Django-Heroku.
 # django_heroku.settings(locals())
 
+LOGIN_URL = "/login/"
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

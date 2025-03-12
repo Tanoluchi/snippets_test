@@ -162,7 +162,8 @@ class Login(AuthenticationForm, View):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect("index")
+            next_url = request.GET.get('next') or 'index'
+            return redirect(next_url)
         return render(request, 'login.html', {'form': form})
 
 class Logout(View):
