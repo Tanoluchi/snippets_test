@@ -29,6 +29,9 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = ["django-snippets-crud.herokuapp.com/"]
 
+if DEBUG:
+    ALLOWED_HOSTS.append("127.0.0.1")
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -124,7 +127,7 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, "static")
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Activate Django-Heroku.
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
