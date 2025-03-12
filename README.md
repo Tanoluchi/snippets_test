@@ -1,4 +1,4 @@
-# Respositorio django snippets
+# Repositorio django snippets
 
 ## Descripción
 

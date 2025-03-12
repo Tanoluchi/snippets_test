@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
-import django_heroku
 from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -27,10 +26,11 @@ SECRET_KEY = config("SECRET_KEY", default="Secret Key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = ["django-snippets-crud.herokuapp.com/"]
-
-if DEBUG:
-    ALLOWED_HOSTS.append("127.0.0.1")
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1',
+    'web-production-51c1f.up.railway.app'
+]
 
 # Application definition
 
@@ -147,3 +147,5 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
+
+CSRF_TRUSTED_ORIGINS = ['http://*','https://web-production-17d9.up.railway.app']
