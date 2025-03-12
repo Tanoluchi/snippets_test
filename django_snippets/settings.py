@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-
+import dj_database_url
 from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -73,13 +73,19 @@ WSGI_APPLICATION = "django_snippets.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+IS_PRODUCTION = config("IS_PRODUCTION", default=False)
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+if IS_PRODUCTION:
+    DATABASES = {
+        "default": dj_database_url.config(default=config("DATABASE_URL"))
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(os.path.dirname(__file__), "db.sqlite3"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -140,8 +146,8 @@ CELERY_RESULT_BACKEND = config("REDIS_URL", default="")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
-CELERY_TASK_ALWAYS_EAGER = config("CELERY_EAGER", default="True")
-CELERY_TASK_EAGER_PROPAGATES = config("CELERY_EAGER", default="True")
+CELERY_TASK_ALWAYS_EAGER = config("CELERY_EAGER", default=True)
+CELERY_TASK_EAGER_PROPAGATES = config("CELERY_EAGER", default=True)
 
 ALLOWED_HOSTS = ['localhost','web-production-51c1f.up.railway.app']
 
