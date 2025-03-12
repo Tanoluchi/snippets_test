@@ -102,7 +102,7 @@ class SnippetDetails(View):
         if not snippet.public and (not request.user.is_authenticated or username != snippet.user.username):
             raise PermissionDenied("No tienes permiso para ver este snippet.")
 
-        return render(request, "snippets/snippet.html", {"snippet": snippet})
+        return render(request, "snippets/snippet.html", {"snippet": snippet.highlight})
 
 class UserSnippets(View):
     """
