@@ -151,4 +151,4 @@ CELERY_TASK_EAGER_PROPAGATES = config("CELERY_EAGER", default=True)
 
 ALLOWED_HOSTS = ['localhost','web-production-51c1f.up.railway.app']
 
-CSRF_TRUSTED_ORIGINS = ['http://*','https://web-production-51c1f.up.railway.app/']
+CSRF_TRUSTED_ORIGINS = ['http://*','https://web-production-51c1f.up.railway.app']
