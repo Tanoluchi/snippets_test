@@ -145,7 +145,7 @@ CELERY_RESULT_BACKEND = config("REDIS_URL", default="")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
-CELERY_TASK_ALWAYS_EAGER = True
-CELERY_TASK_EAGER_PROPAGATES = True
+CELERY_TASK_ALWAYS_EAGER = config("CELERY_EAGER", default="True")
+CELERY_TASK_EAGER_PROPAGATES = config("CELERY_EAGER", default="True")
 
 CSRF_TRUSTED_ORIGINS = ['http://*','https://web-production-17d9.up.railway.app']
