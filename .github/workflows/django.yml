@@ -1,8 +1,10 @@
 name: Build Python
 
-on: 
+on:
   push:
-    branches: [main]
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -23,6 +25,4 @@ jobs:
 
       - name: Run Django unit tests
         run: |
-          python manage.py makemigrations
-          python manage.py migrate
           python manage.py test -v 2
