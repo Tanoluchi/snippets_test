@@ -40,7 +40,7 @@ class SnippetAdd(LoginRequiredMixin, View):
             snippet = form.save(commit=False)
             snippet.user = request.user
             snippet.save()
-            # sendEmailInSnippetCreation.delay(snippet.name, snippet.description, snippet.user.email)
+            sendEmailInSnippetCreation.delay(snippet.name, snippet.description, snippet.user.email)
             return redirect("snippet", id=snippet.id)
         return render(request, "snippets/snippet_add.html", {"form": form})
 
