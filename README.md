@@ -43,3 +43,10 @@ lenguajes de programación.
     python manage.py runserver
     celery -A django_snippets worker -l info
     ```
+
+## Credenciales
+- username: admin
+- password: admin123
+
+## URL Production
+https://web-production-51c1f.up.railway.app/
