@@ -1,11 +1,15 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
 from django.contrib.auth import login, logout
+from django.db.models import Q
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm
 
 from .forms import SnippetForm
 from .tasks import sendEmailInSnippetCreation
+from .utils import is_the_owner
+from .decorators import owner_required
 
 from .models import (
     Snippet,
@@ -41,8 +45,16 @@ class SnippetAdd(LoginRequiredMixin, View):
             snippet.save()
             sendEmailInSnippetCreation.delay(snippet.name, snippet.description, snippet.user.email)
             return redirect("snippet", id=snippet.id)
-        return render(request, "snippets/snippet_add.html", {"form": form})
+        return render(
+            request, 
+            "snippets/snippet_add.html", 
+            {
+                "form": form, 
+                "action": "Add"
+            }
+        )
 
+@method_decorator(owner_required, name="dispatch")
 class SnippetEdit(LoginRequiredMixin, View):
     """
     View to edit an existing snippet.
@@ -52,26 +64,20 @@ class SnippetEdit(LoginRequiredMixin, View):
     GET: Renders a form pre-populated with the snippet's current data.
     POST: Processes the form data and updates the snippet if the data is valid.
     """
-    def dispatch(self, request, *args, **kwargs):
-        snippet = get_object_or_404(Snippet, id=self.kwargs["id"])
-
-        if snippet.user.username != request.user.username:
-            return redirect("index")
-
-        self.snippet = snippet
-        return super().dispatch(request, *args, **kwargs)
-
     def get(self, request, *args, **kwargs):
-        form = SnippetForm(instance=self.snippet)
+        snippet = get_object_or_404(Snippet, id=self.kwargs["id"])
+        form = SnippetForm(instance=snippet)
         return render(request, "snippets/snippet_add.html", {"form": form, "action": "Edit"})
 
     def post(self, request, *args, **kwargs):
-        form = SnippetForm(request.POST, instance=self.snippet)
+        snippet = get_object_or_404(Snippet, id=self.kwargs["id"])
+        form = SnippetForm(request.POST, instance=snippet)
         if form.is_valid():
             form.save()
-            return redirect("snippet", id=self.snippet.id)
+            return redirect("snippet", id=snippet.id)
         return render(request, "snippets/snippet_add.html", {"form": form, "action": "Edit"})
 
+@method_decorator(owner_required, name="dispatch")
 class SnippetDelete(LoginRequiredMixin, View):
     """
     View to delete a snippet.
@@ -82,10 +88,6 @@ class SnippetDelete(LoginRequiredMixin, View):
     """
     def get(self, request, *args, **kwargs):
         snippet = get_object_or_404(Snippet, id=kwargs["id"])
-        username = request.user.username
-        if username != snippet.user.username:
-            return redirect("index")
-
         snippet.delete()
         return redirect("user_snippets", username=request.user.username)
 
@@ -98,8 +100,8 @@ class SnippetDetails(View):
     def get(self, request, *args, **kwargs):
         snippet_id = self.kwargs["id"]
         snippet = get_object_or_404(Snippet, id=snippet_id)
-        username = request.user.username
-        if not snippet.public and (not request.user.is_authenticated or username != snippet.user.username):
+        is_owner = is_the_owner(request, snippet.user.username)
+        if not snippet.public and not is_owner:
             return redirect("index")
 
         return render(
@@ -121,7 +123,8 @@ class UserSnippets(View):
     def get(self, request, *args, **kwargs):
         username = self.kwargs["username"]
         owner = get_object_or_404(User, username=username)
-        if request.user.username == owner.username:
+        is_owner = is_the_owner(request, owner.username)
+        if is_owner:
             snippets = Snippet.objects.filter(user=owner)
         else:
             snippets = Snippet.objects.filter(user=owner, public=True)
@@ -182,8 +185,14 @@ class Index(View):
 
     GET:
         Retrieves all Snippet objects that are marked as public and renders them
-        in the 'index.html' template.
+        in the 'index.html' template. 
+        If there is an authenticated user, I also look for his snippets to show.
     """
     def get(self, request, *args, **kwargs):
-        snippets = Snippet.objects.filter(public=True)
+        if request.user.is_authenticated:
+            snippets = Snippet.objects.filter(
+                Q(public=True) | Q(user=request.user)
+            ).distinct()
+        else:
+            snippets = Snippet.objects.filter(public=True)
         return render(request, "index.html", {"snippets": snippets})
