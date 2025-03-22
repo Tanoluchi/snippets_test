@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  server:
+    container_name: snippets_test-server
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    command: sh -c "./entrypoint.sh"
+    env_file: .env
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    stdin_open: true
+    tty: true
+    restart: always
+  
+  redis:
+    image: "redis:latest"
+    container_name: snippets_test-redis
+    ports:
+      - "6379:6379"
+    restart: always
