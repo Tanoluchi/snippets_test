@@ -73,7 +73,7 @@ WSGI_APPLICATION = "django_snippets.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-IS_PRODUCTION = config("IS_PRODUCTION", default=False)
+IS_PRODUCTION = config("IS_PRODUCTION", default=False, cast=bool)
 
 if IS_PRODUCTION:
     DATABASES = {
@@ -146,9 +146,9 @@ CELERY_RESULT_BACKEND = config("REDIS_URL", default="")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
-CELERY_TASK_ALWAYS_EAGER = config("CELERY_EAGER", default=True)
-CELERY_TASK_EAGER_PROPAGATES = config("CELERY_EAGER", default=True)
+CELERY_TASK_ALWAYS_EAGER = config("CELERY_EAGER", default=True, cast=bool)
+CELERY_TASK_EAGER_PROPAGATES = config("CELERY_EAGER", default=True, cast=bool)
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','web-production-51c1f.up.railway.app']
+ALLOWED_HOSTS = ['localhost','0.0.0.0','127.0.0.1','web-production-51c1f.up.railway.app']
 
 CSRF_TRUSTED_ORIGINS = ['http://*','https://web-production-51c1f.up.railway.app']
