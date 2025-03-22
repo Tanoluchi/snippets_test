@@ -11,7 +11,9 @@ lenguajes de programación.
     - SQLite
     - Pygments 
 
-## Instalación
+## Instalación y configuración
+
+### Manera manual
 
 1. Clona este repositorio:
     ```bash
@@ -36,13 +38,84 @@ lenguajes de programación.
     python manage.py createsuperuser
     ```
 
-6. Modifica el nombre del archivo de las variables de entorno a .env, luego configura los valores de las variables
+6. Cambiar nombre de archivo .env.example a .env, luego configura los valores de las variables
+```bash
+        # Configuracion Django
+        SECRET_KEY="THEWINTERISCOMING"
+        DEBUG=True
 
-7. Corre el proyecto y en paralelo también Celery para la ejecución de las tareas
+        # Configuracion de email para la task
+        EMAIL_HOST="smtp.gmail.com"
+        EMAIL_HOST_USER="yourmail@gmail.com"
+        EMAIL_HOST_PASSWORD="your pasword"
+        EMAIL_PORT=587
+        EMAIL_USE_TLS=True
+
+        # Configuracion redis
+        REDIS_URL="redis://127.0.0.1:6379"
+
+        # Configuracion celery para usarlo en tests
+        CELERY_EAGER=False
+
+        # Configuracion para utilizar base de datos local o de produccion
+        IS_PRODUCTION=False
+
+        # Configuracion base de datos (vacio si no es de produccion ya que utilizaremos sqlite en entorno de desarrollo)
+        DATABASE_URL=""
+```
+
+7. Levanta tu servidor redis
+
+8. Corre el proyecto y en paralelo también Celery para la ejecución de las tareas
     ```bash
     python manage.py runserver
     celery -A django_snippets worker -l info
     ```
+
+### Usando Docker
+
+1. Cambiar nombre de archivo .env.example a .env y luego modificar el archivo
+     ```bash
+        # Configuracion Django
+        SECRET_KEY="THEWINTERISCOMING"
+        DEBUG=True
+
+        # Configuracion de email para la task
+        EMAIL_HOST="smtp.gmail.com"
+        EMAIL_HOST_USER="yourmail@gmail.com"
+        EMAIL_HOST_PASSWORD="your pasword"
+        EMAIL_PORT=587
+        EMAIL_USE_TLS=True
+
+        # Configuracion redis
+        REDIS_URL="redis://snippets_test-redis:6379"
+
+        # Configuracion celery para usarlo en tests
+        CELERY_EAGER=False
+
+        # Configuracion para utilizar base de datos local o de produccion
+        IS_PRODUCTION=False
+
+        # Configuracion base de datos (vacio si no es de produccion ya que utilizaremos sqlite en entorno de desarrollo)
+        DATABASE_URL=""
+    ```
+
+2.Levantar el docker con el siguiente comando
+```bash
+    - make build
+    - make up
+```
+
+3. Crear un superusuario con el comando
+```bash
+    - make exec
+    - python manage.py createsuperuser
+```
+
+4. Correr celery con el comando
+```bash
+    - make celery
+```
 
 ## Credenciales
 - username: admin
